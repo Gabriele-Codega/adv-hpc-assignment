@@ -1,0 +1,21 @@
+# this supports compilation with mpicc wrapper to Nvidia nvc
+CC = mpicc
+
+CFLAGS = -Wall -O3 -mp
+
+INCLUDES = -I. -I${CUDA_INC}
+LIBDIR = -L${CUDA_LIB}
+LIBS = -lcublas -lcuda
+
+all: cublas
+
+gpu: cublas
+
+cublas: utils.o
+	${CC} ${INCLUDES} ${LIBDIR} ${CFLAGS} ${LIBS} main.c $^ -o ${@}.x -DTIMEIT -DCUBLAS
+
+utils: 
+	${CC} ${INCLUDES} ${LIBDIR} ${CFLAGS} -c ${@}.c -o ${@}.o
+
+clean:
+	-rm -f *.x

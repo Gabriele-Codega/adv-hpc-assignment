@@ -1,0 +1,23 @@
+# this supports compilation with intel mpiicc and MKL
+CC = mpiicc
+
+CFLAGS= -O3 -qopenmp
+
+INCLUDES = -I. -I${MKLROOT}/inc
+LIBDIR = -L${MKLROOT}/lib/intel64
+
+LIBS= -lmkl_rt
+
+all: naive blas 
+
+naive: utils.o
+	${CC} ${INCLUDES} ${LIBDIR} ${CFLAGS} main.c $^ -o ${@}.x -DTIMEIT
+
+blas: utils.o
+	${CC} ${INCLUDES} ${LIBDIR} ${CFLAGS} ${LIBS} main.c $^ -o ${@}.x -DTIMEIT -DBLAS
+
+utils: 
+	${CC} ${INCLUDES} ${LIBDIR} ${CFLAGS} -c ${@}.c -o ${@}.o
+
+clean:
+	-rm -f *.x
