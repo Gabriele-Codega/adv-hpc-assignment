@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=compile
-#SBATCH -A itc24_dssc_cpu
-#SBATCH --partition=dcgp_usr_prpod
+#SBATCH -A ICT24_DSSC_CPU
+#SBATCH --partition=dcgp_usr_prod
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
