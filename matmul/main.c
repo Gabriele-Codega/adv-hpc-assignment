@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <mpi.h>
 #include "utils.h"
 
@@ -277,7 +278,15 @@ int main(int argc,char** argv){
 	compute_std = sqrt(compute_std);
 	copy_std = sqrt(copy_std);
 
-	printf("Times:\n\tinit: %.3g s pm %3.g\n\tcomm: %.3g s pm %3.g\n\tcomputation: %.3g s pm %3.g\n\tcopy: %.3g s pm %.3g\n",init_mean,init_std,comm_mean,comm_std,compute_mean,compute_std,copy_mean,copy_std);
+	//printf("Times:\n\tinit: %.3g s pm %3.g\n\tcomm: %.3g s pm %3.g\n\tcomputation: %.3g s pm %3.g\n\tcopy: %.3g s pm %.3g\n",init_mean,init_std,comm_mean,comm_std,compute_mean,compute_std,copy_mean,copy_std);
+	char fname[256];
+	char *name = argv[0];
+	size_t len = strlen(name);
+	name[len-2] = '\0';
+	snprintf(fname,sizeof(fname),"%s_%d_times.csv",name,SIZE);
+	FILE* outfile = fopen(fname,"a");
+	fprintf(outfile, "%d, %f, %f, %f, %f, %f, %f, %f, %f\n", npes,init_mean,init_std,comm_mean,comm_std,compute_mean,compute_std,copy_mean,copy_std);
+	fclose(outfile);
     }
 
 

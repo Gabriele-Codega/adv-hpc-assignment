@@ -9,6 +9,6 @@
 #SBATCH --mem=1000
 #SBATCH --time=00:01:00
 
-module load module load nvhpc/23.11 openmpi/4.1.6--nvhpc--23.11 cuda/
+module load nvhpc/23.11 openmpi/4.1.6--nvhpc--23.11 cuda/
 
 make -f MakefileGPU
