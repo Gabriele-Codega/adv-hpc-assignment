@@ -5,7 +5,7 @@ CFLAGS = -Wall -O3 -mp
 
 INCLUDES = -I. -I${CUDA_INC}
 LIBDIR = -L${CUDA_LIB}
-LIBS = -lcublas -lcuda
+LIBS = -lcublas -lcudart
 
 all: cublas
 
