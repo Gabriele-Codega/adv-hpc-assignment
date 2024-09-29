@@ -65,7 +65,7 @@ int main(int argc,char** argv){
     }
 
     // time variables
-    double t_init = 0, t_comm = 0, t_compute = 0, t_copy = 0;
+    double t_init = 0, t_comm = 0, t_block = 0, t_gather = 0, t_compute = 0, t_copy = 0;
 
     int rank,npes;
     int th_level;
@@ -185,11 +185,13 @@ int main(int argc,char** argv){
 
 
 	// create block to send and gather
-	timeCPU( { 
-		 create_block(B,SIZE,col_idx,n_loc,ncols,b_block);
-		 MPI_Allgatherv(b_block,n_loc*ncols,MPI_DOUBLE,b_col,rcvcounts,displs,MPI_DOUBLE,MPI_COMM_WORLD); 
-		}, 
-		&t_comm);
+	//timeCPU( { 
+	//	 create_block(B,SIZE,col_idx,n_loc,ncols,b_block);
+	//	 MPI_Allgatherv(b_block,n_loc*ncols,MPI_DOUBLE,b_col,rcvcounts,displs,MPI_DOUBLE,MPI_COMM_WORLD); 
+	//	}, 
+	//	&t_comm);
+	timeCPU( create_block(B,SIZE,col_idx,n_loc,ncols,b_block), &t_block);
+	timeCPU( MPI_Allgatherv(b_block,n_loc*ncols,MPI_DOUBLE,b_col,rcvcounts,displs,MPI_DOUBLE,MPI_COMM_WORLD), &t_gather );
 
 	#ifdef CUBLAS
 	timeGPU( cudaMemcpy(b_col_d,b_col,SIZE*ncols*sizeof(double),cudaMemcpyHostToDevice), &t_copy);
@@ -210,6 +212,9 @@ int main(int argc,char** argv){
     }
     free(b_block);
     free(b_col);
+
+    t_comm = t_block + t_gather;
+    printf("proc %d: block = %f, gather = %f\n",rank,t_block,t_comm);
 
     #ifdef CUBLAS
     timeGPU( cudaMemcpy(C,C_d,n_loc*SIZE*sizeof(double),cudaMemcpyDeviceToHost), &t_copy);

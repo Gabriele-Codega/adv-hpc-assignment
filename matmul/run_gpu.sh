@@ -5,7 +5,7 @@
 
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=8
-#SBATCH --gpus=4
+#SBATCH --gpus-per-node=4
 
 #SBATCH --time=00:10:00
 
@@ -25,4 +25,4 @@ if ! [ -e cuda_"$1"_times.csv ]; then
     echo "npes, init, init_sd, comm, comm_sd, comp, comp_sd, copy, copy_sd" >> cuda_"$1"_times.csv
 fi
 
-srun ./cuda.x "$1"
+srun --cpu-bind=verbose ./cuda.x "$1"
