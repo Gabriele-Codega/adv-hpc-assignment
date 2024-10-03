@@ -14,6 +14,8 @@ void evolve( double * matrix, double *matrix_new, size_t dimension );
 
 // return the elapsed time
 double seconds( void );
+void print_mat(int N,int M,double* mat,FILE* file);
+void print_mat_parallel(double* A, int rank, int size, int n_loc, int npes,FILE* file);
 
 /*** end function declaration ***/
 
@@ -75,6 +77,8 @@ int main(int argc, char* argv[]){
     matrix_new[ ( ( dimension + 1 ) * ( dimension + 2 ) ) + ( dimension + 1 - i ) ] = i * increment;
   }
   
+  //print_mat(dimension+2,dimension+2,matrix,stdout);
+
   // start algorithm
   t_start = seconds();
   for( it = 0; it < iterations; ++it ){
@@ -120,11 +124,12 @@ void save_gnuplot( double *M, size_t dimension ){
   const double h = 0.1;
   FILE *file;
 
-  file = fopen( "solution.dat", "w" );
+  file = fopen( "solution.bin", "wb" );
 
-  for( i = 0; i < dimension + 2; ++i )
-    for( j = 0; j < dimension + 2; ++j )
-      fprintf(file, "%f\t%f\t%f\n", h * j, -h * i, M[ ( i * ( dimension + 2 ) ) + j ] );
+  fwrite(M,sizeof(double),(dimension+2)*(dimension+2),file);
+  //for( i = 0; i < dimension + 2; ++i )
+  //  for( j = 0; j < dimension + 2; ++j )
+  //    fprintf(file, "%f\t%f\t%f\n", h * j, -h * i, M[ ( i * ( dimension + 2 ) ) + j ] );
 
   fclose( file );
 
@@ -138,5 +143,15 @@ double seconds(){
     gettimeofday( &tmp, (struct timezone *)0 );
     sec = tmp.tv_sec + ((double)tmp.tv_usec)/1000000.0;
     return sec;
+}
+
+void print_mat(int N,int M,double* mat,FILE* file){
+    int i = 0, j = 0;
+    for (i=0;i<N;i++){
+        for (j=0;j<M;j++){
+            fprintf(file,"%.3g\t",mat[i*M+j]);
+        }
+        fprintf(file,"\n");
+    }
 }
 

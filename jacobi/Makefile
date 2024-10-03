@@ -1,29 +1,15 @@
-# inputs for the executables
 
-dim = 10
-it  = 100
-r = 3
-c = 3
+all: base cpu gpu rma
 
-CC=cc
-CFLAGS=-O3
-
-SRCS=$(wildcard *.c)
-EXE=$(SRCS:.c=.x)
-
-all: $(EXE)
-
-run: clean all
-	./$(EXE) $(dim) $(it) $(r) $(c)
-
-%.x: %.c
-	$(CC) $< $(CFLAGS) -o $@
+base:
+	gcc -O3 jacobi_base.c -o ${@}.x
+cpu: utils.c
+	mpiicc -O3 -qopenmp jacobi_parallel.c $^ -o ${@}.x 
+gpu: utils.c
+	mpicc -O3 -mp -acc jacobi_parallel.c $^ -o ${@}.x 
+rma: utils.c
+	mpicc -O3 -mp -acc jacobi_rma.c $^ -o ${@}.x 
 
 clean:
-	@rm -f *~ $(EXE) solution.dat 
-
-plot:
-	@gnuplot -p plot.plt
-
-.PHONY: clean plot all
-
+	-rm -f *.o
+	-rm -f *.x
